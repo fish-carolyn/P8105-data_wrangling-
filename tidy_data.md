@@ -1,0 +1,116 @@
+data_wrangling_i: tidy data
+================
+2023-09-26
+
+## Class example
+
+``` r
+pulse_df = 
+  haven::read_sas("./data/data_import_examples/public_pulse_data.sas7bdat") |>
+  janitor::clean_names()
+```
+
+- make data frame wide –\> long
+- change visit data to match the other rows for “00m”
+
+``` r
+pulse_tidy_data = 
+  pivot_longer(
+    pulse_df, 
+    bdi_score_bl:bdi_score_12m,
+    names_to = "visit", 
+    values_to = "bdi", 
+    names_prefix = "bdi_score_"
+  ) |>
+  mutate(
+    visit= replace(visit, visit == "b1", "00m")
+  )
+```
+
+## Learning assessment
+
+``` r
+litters_df= 
+    read_csv("data/data_import_examples/FAS_litters.csv")
+
+#makes everything lowercase, removes special characters, removes spaces
+litters_df= 
+  janitor::clean_names(litters_df) |> 
+  select(litter_number, gd0_weight, gd18_weight) |> 
+  pivot_longer(
+    gd0_weight:gd18_weight, 
+    names_to = "gd", 
+    values_to = "weight"
+  ) |> 
+  mutate(
+    gd = case_match(
+      gd, 
+      "0_weight" ~ 0, 
+      "18_weight" ~ 18
+    ))
+```
+
+## LoTR
+
+``` r
+fellowship_df= 
+  readxl::read_excel("data/data_import_examples/LotR_Words.xlsx", 
+                     range = "B3:D6") |> 
+  mutate(
+    film= "Fellowship of the Ring")
+
+two_towers_df= 
+  readxl::read_excel("data/data_import_examples/LotR_Words.xlsx", 
+                     range = "F3:H6") |> 
+  mutate( 
+    film= "Two Towers")
+
+return_df= 
+  readxl::read_excel("data/data_import_examples/LotR_Words.xlsx", 
+                     range = "J3:L6") |> 
+  mutate( 
+    film= "Return of the King")
+
+lotr_df= 
+  bind_rows(fellowship_df, two_towers_df, return_df) |> 
+  janitor::clean_names() |>
+  pivot_longer(
+    male:female, 
+    names_to ="gender", 
+    values_to = "word"
+  ) |> 
+  relocate(film)
+```
+
+## Combining data sets
+
+- Using `separate` to create new variables from existing variables
+- recoding numerical categorical variables for readability
+- `left_join` to combine data frames into one df
+
+``` r
+litters_df= 
+  read_csv("data/data_import_examples/FAS_litters.csv") |> 
+  janitor::clean_names() |> 
+  mutate(
+    wt_gain= gd18_weight- gd0_weight
+  ) |> 
+  select(litter_number, group, wt_gain) |> 
+  separate(group, into =c("dose", "day_of_tx"), 3)
+
+
+pups_df= 
+  read_csv("data/data_import_examples/FAS_pups.csv") |> 
+  janitor::clean_names() |> 
+  mutate(
+    sex= case_match(
+      sex, 
+      1 ~ "male", 
+      2 ~ "female"
+    )
+  )
+
+
+fas_df= 
+  left_join(pups_df, litters_df, by= "litter_number")
+```
