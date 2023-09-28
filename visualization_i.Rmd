@@ -12,7 +12,7 @@ library(ggridges)
 ```
 
 Data for plotting today...
-```{r, message=FALSE, results='hide'}
+```{r, message=FALSE, results='hide', warning=FALSE}
 weather_df = 
   rnoaa::meteo_pull_monitors(
     c("USW00094728", "USW00022534", "USS0023B17S"),
@@ -30,8 +30,10 @@ weather_df =
   select(name, id, everything())
 ```
 
+## Bivariate plots 
+
 Making a plot!
-```{r, message=FALSE}
+```{r, message=FALSE, warning=FALSE}
 weather_df |> 
   filter(name == "CentralPark, NY") |> 
 ggplot(aes(x = tmin, y = tmax))+
@@ -47,7 +49,7 @@ ggplot(aes(x = tmin, y = tmax))+
 ```
 
 Fancy plot 
-```{r, message=FALSE}
+```{r, message=FALSE, warning=FALSE}
 weather_df |> 
   ggplot( aes(x= tmin, y=tmax, color= name))+
   geom_point()+ 
@@ -66,7 +68,8 @@ weather_df |>
 
 
 Plot with facets 
-```{r, message=FALSE}
+```{r, message=FALSE, warning= FALSE}
+
 weather_df |> 
   ggplot(aes(x= tmin, y= tmax, color=name))+
   geom_point(alpha=0.3)+
@@ -78,7 +81,7 @@ weather_df |>
 ```
 
 A different plot, with more than just temperature. 
-```{r, message=FALSE}
+```{r, message=FALSE, warning=FALSE}
 weather_df |> 
   ggplot(aes(x= date, y= tmax, color= name))+
   geom_point(aes(size= prcp), alpha=0.3)+
@@ -87,17 +90,86 @@ weather_df |>
 ```
 
 Assigning colors 
-```{r, message=FALSE}
+```{r, message=FALSE, warning=FALSE}
 weather_df |> 
   filter(name== "CentralPark, NY") |> 
   ggplot(aes(x= date, y= tmax))+
-  geom_point(color="orange")
+  geom_point(color="orange")+
+  theme_linedraw()
 
 #aesthetic mapping means that you are taking variables and assigning them to elements of the plot. So if you want anything to be dictated by the data (like by name, group, etc.) you need to put in aes(). If you want to assign independent of a variable, add color to the object you want that color. 
 
 # He does not love assigning color by hand. 
 ```
 
+```{r, message=FALSE, warning=FALSE}
+weather_df |> 
+  filter(name== "Molokai, HI") |> 
+  ggplot(aes(x= date, y= tmax))+
+  geom_line(color="purple", alpha= 0.3)+
+  geom_point(color= "orange", alpha= 0.3)+
+  theme_linedraw()
+```
+
+
+## Univariate plotting 
+
+histogram
+```{r, message=FALSE, warning=FALSE}
+weather_df |> 
+  ggplot(aes(x= tmax, fill=name))+
+  geom_histogram(position = "dodge")+
+  theme_linedraw()
+
+# "dodge" ensures bars do not overlap 
+```
+
+density plot 
+```{r, message=FALSE, warning=FALSE}
+weather_df |> 
+  ggplot(aes(x= tmax, fill=name))+
+  geom_density(alpha= 0.3)+
+  theme_linedraw()
+```
+
+box plots 
+```{r, message=FALSE, warning=FALSE}
+weather_df |> 
+  ggplot(aes(y= tmax, x=name, fill=name))+
+  geom_boxplot(alpha= 0.3)+
+  theme_linedraw()
+```
+
+violin plots 
+```{r, message=FALSE, warning=FALSE}
+weather_df |> 
+  ggplot(aes(y= tmax, x=name, fill=name))+
+  geom_violin(alpha= 0.3)+
+  theme_linedraw()
+```
+
+ridge plot 
+```{r, message=FALSE, warning=FALSE}
+weather_df |> 
+  ggplot(aes(x= tmax, y=name, fill=name))+
+  geom_density_ridges(alpha= 0.3)+
+  theme_linedraw()
+```
+
+## Saving and embedding plots 
+```{r}
+ggp_nyc_weather
+
+ggsave("viz_i_plot.png", ggp_nyc_weather)
+
+```
+
+Changing the scale for the knit 
+```{r, fig.width=12, fig.height=12}
+
+ggp_nyc_weather
+
+```
 
 
 

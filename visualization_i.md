@@ -22,6 +22,8 @@ weather_df =
   select(name, id, everything())
 ```
 
+## Bivariate plots
+
 Making a plot!
 
 ``` r
@@ -52,10 +54,6 @@ weather_df |>
   theme_linedraw()
 ```
 
-    ## Warning: Removed 17 rows containing non-finite values (`stat_smooth()`).
-
-    ## Warning: Removed 17 rows containing missing values (`geom_point()`).
-
 ![](visualization_i_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 ``` r
@@ -67,9 +65,6 @@ weather_df |>
   geom_smooth(se=FALSE)+
   theme_linedraw()
 ```
-
-    ## Warning: Removed 17 rows containing non-finite values (`stat_smooth()`).
-    ## Removed 17 rows containing missing values (`geom_point()`).
 
 ![](visualization_i_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
 
@@ -88,10 +83,6 @@ weather_df |>
   facet_grid(.~name)
 ```
 
-    ## Warning: Removed 17 rows containing non-finite values (`stat_smooth()`).
-
-    ## Warning: Removed 17 rows containing missing values (`geom_point()`).
-
 ![](visualization_i_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 ``` r
@@ -108,10 +99,6 @@ weather_df |>
   facet_grid(.~name)
 ```
 
-    ## Warning: Removed 17 rows containing non-finite values (`stat_smooth()`).
-
-    ## Warning: Removed 19 rows containing missing values (`geom_point()`).
-
 ![](visualization_i_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 Assigning colors
@@ -120,7 +107,8 @@ Assigning colors
 weather_df |> 
   filter(name== "CentralPark, NY") |> 
   ggplot(aes(x= date, y= tmax))+
-  geom_point(color="orange")
+  geom_point(color="orange")+
+  theme_linedraw()
 ```
 
 ![](visualization_i_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
@@ -130,3 +118,97 @@ weather_df |>
 
 # He does not love assigning color by hand. 
 ```
+
+``` r
+weather_df |> 
+  filter(name== "Molokai, HI") |> 
+  ggplot(aes(x= date, y= tmax))+
+  geom_line(color="purple", alpha= 0.3)+
+  geom_point(color= "orange", alpha= 0.3)+
+  theme_linedraw()
+```
+
+![](visualization_i_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
+## Univariate plotting
+
+histogram
+
+``` r
+weather_df |> 
+  ggplot(aes(x= tmax, fill=name))+
+  geom_histogram(position = "dodge")+
+  theme_linedraw()
+```
+
+![](visualization_i_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+``` r
+# "dodge" ensures bars do not overlap 
+```
+
+density plot
+
+``` r
+weather_df |> 
+  ggplot(aes(x= tmax, fill=name))+
+  geom_density(alpha= 0.3)+
+  theme_linedraw()
+```
+
+![](visualization_i_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
+box plots
+
+``` r
+weather_df |> 
+  ggplot(aes(y= tmax, x=name, fill=name))+
+  geom_boxplot(alpha= 0.3)+
+  theme_linedraw()
+```
+
+![](visualization_i_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+violin plots
+
+``` r
+weather_df |> 
+  ggplot(aes(y= tmax, x=name, fill=name))+
+  geom_violin(alpha= 0.3)+
+  theme_linedraw()
+```
+
+![](visualization_i_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+ridge plot
+
+``` r
+weather_df |> 
+  ggplot(aes(x= tmax, y=name, fill=name))+
+  geom_density_ridges(alpha= 0.3)+
+  theme_linedraw()
+```
+
+![](visualization_i_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+## Saving and embedding plots
+
+``` r
+ggp_nyc_weather
+```
+
+![](visualization_i_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+``` r
+ggsave("viz_i_plot.png", ggp_nyc_weather)
+```
+
+    ## Saving 7 x 5 in image
+
+Changing the scale for the knit
+
+``` r
+ggp_nyc_weather
+```
+
+![](visualization_i_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
