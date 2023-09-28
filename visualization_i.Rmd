@@ -1,0 +1,13 @@
+---
+title: "visualization_i: ggplot basics"
+output: github_document
+date: "2023-09-28"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(readxl)
+library(haven)
+```
